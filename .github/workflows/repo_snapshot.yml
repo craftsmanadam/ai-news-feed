@@ -1,0 +1,57 @@
+name: Repo Snapshot
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate snapshot report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p output
+
+          {
+            echo "# Repo Snapshot"
+            echo
+            echo "## Commit"
+            echo "$(git rev-parse HEAD)"
+            echo
+            echo "## Tree (depth 4)"
+            echo '```'
+            if command -v tree >/dev/null 2>&1; then
+              tree -a -L 4
+            else
+              find . -maxdepth 4 -print | sed 's|^\./||'
+            fi
+            echo '```'
+            echo
+            echo "## Key files"
+            for f in README.md pyproject.toml requirements.txt Dockerfile docker-compose.yml compose.yml; do
+            if [ -f "$f" ]; then
+              echo
+              echo "### $f"
+              echo '```'
+              sed -n '1,200p' "$f"
+              echo '```'
+            fi
+            done
+            echo
+            echo "## Python package layout hints"
+            echo '```'
+            find . -maxdepth 4 -type f $begin:math:text$ \-name \"\*\.py\" \-o \-name \"\*\.toml\" \-o \-name \"\*\.yaml\" \-o \-name \"\*\.yml\" $end:math:text$ \
+              | sed 's|^\./||' \
+              | sort
+            echo '```'
+          } > out/snapshot.md
+      - name: Upload snapshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-snapshot
+          path: out/snapshot.md
