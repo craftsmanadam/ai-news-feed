@@ -15,6 +15,5 @@ echo "🤖 ⟶  Building Docker image ${IMAGE_NAME} …"
 eval "docker build \
         --pull \
         --build-arg VERSION=${VERSION} \
-        --build-arg JFROG_USER=${JFROG_USER} \
         --secret id=ARTIFACT_ACCESS_TOKEN \
         -t ${IMAGE_NAME} ."

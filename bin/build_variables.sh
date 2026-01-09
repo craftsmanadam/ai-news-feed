@@ -5,7 +5,7 @@
 set -e
 
 export PROJECT_NAME="$(poetry version | awk {'print $1'})"
-export IMAGE_NAME=mednax/${PROJECT_NAME}
+export IMAGE_NAME=craftsmanadam/${PROJECT_NAME}
 export VERSION="$(poetry version --short)"
 
 # A way to echo that will respect escape sequences.
