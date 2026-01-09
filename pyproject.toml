@@ -18,6 +18,12 @@ packages = [{include = "ai_news_feed", from = "src"}]
 ai-news-feed = "ai_news_feed.cli:main"
 
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.14.11"
+black = "^25.12.0"
+isort = "^7.0.0"
+bandit = "^1.9.2"
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
