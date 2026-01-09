@@ -7,6 +7,8 @@ on:
 jobs:
   snapshot:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,9 +51,10 @@ jobs:
               | sed 's|^\./||' \
               | sort
             echo '```'
-          } > out/snapshot.md
+          } > output/snapshot.md
       - name: Upload snapshot artifact
         uses: actions/upload-artifact@v4
         with:
           name: repo-snapshot
-          path: out/snapshot.md
+          path: output/snapshot.md
+          retention-days: 7
