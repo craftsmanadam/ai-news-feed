@@ -1,1 +1,5 @@
-# to be set as entry point for our application
+def main():
+    print("hello")
+
+if __name__ == "__main__":
+    main()
