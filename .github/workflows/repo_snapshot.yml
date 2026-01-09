@@ -27,31 +27,33 @@ jobs:
             echo
             echo "## Tree (depth 4)"
             echo '```'
+            # Check for tree utility, fallback to find
             if command -v tree >/dev/null 2>&1; then
               tree -a -L 4
             else
-              find . -maxdepth 4 -print | sed 's|^\./||'
+              find . -maxdepth 4 -not -path '*/.*' | sed 's|^\./||'
             fi
             echo '```'
             echo
             echo "## Key files"
             for f in README.md pyproject.toml requirements.txt Dockerfile docker-compose.yml compose.yml; do
-            if [ -f "$f" ]; then
-              echo
-              echo "### $f"
-              echo '```'
-              sed -n '1,200p' "$f"
-              echo '```'
-            fi
+              if [ -f "$f" ]; then
+                echo
+                echo "### $f"
+                echo '```'
+                head -n 200 "$f" # Simpler than sed for first 200 lines
+                echo '```'
+              fi
             done
             echo
             echo "## Python package layout hints"
             echo '```'
-            find . -maxdepth 4 -type f $begin:math:text$ \-name \"\*\.py\" \-o \-name \"\*\.toml\" \-o \-name \"\*\.yaml\" \-o \-name \"\*\.yml\" $end:math:text$ \
+            find . -maxdepth 4 -type f \( -name "*.py" -o -name "*.toml" -o -name "*.yaml" -o -name "*.yml" \) \
               | sed 's|^\./||' \
               | sort
             echo '```'
           } > output/snapshot.md
+
       - name: Upload snapshot artifact
         uses: actions/upload-artifact@v4
         with:
