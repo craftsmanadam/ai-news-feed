@@ -1,7 +1,9 @@
 import typer
-
+from pydantic import TypeAdapter
+from typing import List
 
 from ai_news_feed.config import settings as config
+from ai_news_feed.models import FeedConfig
 
 
 app = typer.Typer(
@@ -41,7 +43,9 @@ def run():
 @app.command()
 def settings():
     """Print current settings"""
+    adapter = TypeAdapter(List[FeedConfig])
     typer.echo(config.model_dump_json(indent=2))
+    typer.echo(adapter.dump_json(config.load_feeds(), indent=2).decode("utf-8"))
 
 
 def main():

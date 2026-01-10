@@ -1,0 +1,25 @@
+feeds:
+  - name: The News Stack
+    url: https://thenewstack.io/ai/feed/
+    tags: [ai, agents, news]
+    reliability_score: 8
+
+  - name: Machine Learning Mastery
+    url: https://feeds.feedburner.com/MachineLearningMastery
+    tags: [ai, agents, ml]
+    reliability_score: 8
+
+  - name: Hugging Face
+    url: https://huggingface.co/blog/feed.xml
+    tags: [ai, opensource, news, agents]
+    reliability_score: 8
+
+  - name: OpenAI Blog
+    url: https://openai.com/blog/rss.xml
+    tags: [ai, model, agents]
+    reliability_score: 9
+
+  - name: Anthropic Blog
+    url: https://www.anthropic.com/rss.xml
+    tags: [ai, research]
+    reliability_score: 9
