@@ -12,8 +12,6 @@ source bin/build_variables.sh
 
 mkdir -p "./tmp"
 
-export COVERAGE_FILE="./tmp/.coverage"
-
 echo "🤖 ⟶  Running unit test…"
   poetry run pytest tests/unit \
     --cov="$APPLICATION_DIR" \

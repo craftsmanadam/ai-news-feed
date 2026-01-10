@@ -1,6 +1,9 @@
 import typer
 
 
+from ai_news_feed.config import settings as config
+
+
 app = typer.Typer(help="An agentic agent to aggregate Agentic AI news data and cureate it for consumption")
 
 
@@ -28,6 +31,12 @@ def run():
     logic_collect()
     logic_summarize()
     typer.echo("Full execution complete.")
+
+
+@app.command()
+def settings():
+    """Print current settings"""
+    typer.echo(config.model_dump_json(indent=2))
 
 
 def main():
