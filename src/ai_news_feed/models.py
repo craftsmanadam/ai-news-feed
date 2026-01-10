@@ -1,52 +1,59 @@
-from pydantic import BaseModel
+from __future__ import annotations
 
 from datetime import datetime
-from pydantic import HttpUrl, Field
-from typing import Literal
-
+from typing import Any, Literal
+from pydantic import BaseModel, Field, HttpUrl
 
 PRIORITY_TAG = Literal[
     "must_read", "worth_a_glance", "breaking", "falling", "evergreen"
 ]
 
 
-class Source(BaseModel):
-    name: str = Field(..., description="Name of the outlet (e.g., BBC, TechCrunch)")
-    url: HttpUrl = Field(..., description="Direct link to the article or reference")
+class FeedConfig(BaseModel):
+    name: str = Field(..., description="Human-friendly feed name (e.g., 'OpenAI Blog')")
+    url: HttpUrl = Field(..., description="RSS/Atom feed URL")
+    kind: Literal["rss"] = Field(default="rss", description="Feed type")
     reliability_score: int = Field(
-        default=5,
+        default=7, ge=1, le=10, description="Trust/credibility weighting (1-10)"
+    )
+    tags: list[str] = Field(
+        default_factory=list,
+        description="Tags to apply to all items from this feed (e.g., ['frameworks']).",
+    )
+    max_items: int = Field(
+        default=25,
         ge=1,
-        le=10,
-        description="Agent's assessment of source credibility (1-10)",
+        le=200,
+        description="Max items to take per fetch for this feed",
     )
 
 
 class NewsItem(BaseModel):
-    title: str = Field(..., description="The full title of the news article")
-    url: HttpUrl = Field(..., description="The direct URL to the news source")
-    source: str = Field(
-        ..., description="The name of the publishing outlet (e.g., 'Reuters')"
+    id: str = Field(
+        ..., description="Stable identifier (usually a hash of canonical URL)"
     )
-    published_at: datetime = Field(
-        ..., description="ISO 8601 formatted publication date and time"
+    title: str = Field(..., description="Article title")
+    url: HttpUrl = Field(..., description="Canonical URL for the item")
+    source: str = Field(..., description="Feed name or publisher name")
+    published_at: datetime | None = Field(
+        default=None, description="Publication datetime, if available"
     )
-    summary: str = Field(
-        ..., description="A concise 2-3 sentence overview of the article"
+    author: str | None = Field(default=None, description="Author if provided by feed")
+    raw_summary: str | None = Field(
+        default=None, description="Raw summary/excerpt as provided by RSS/Atom"
     )
-    author: str | None = Field(None, description="The name of the article's author")
-    tags: list[str] = Field(
-        default_factory=list,
-        description="A list of relevant topics or categories (e.g., ['tech', 'AI', 'finance'])",
+    tags: list[str] = Field(default_factory=list, description="Topic tags")
+    raw: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Raw metadata payload for debugging and future enrichment",
     )
 
 
 class DailyBrief(BaseModel):
-    date: datetime = Field(..., description="ISO 8601 formatted date of brief")
-    indicators: set[PRIORITY_TAG] = Field(
-        default_factory=set,
-        description="Priority indicators for this brief. Use 'must_read' for critical news.",
-    )
-    sources: list[Source] = Field(
+    date: datetime = Field(..., description="Date/time the brief was generated")
+    indicators: set[PRIORITY_TAG] = Field(default_factory=set)
+    sources: list[str] = Field(
         default_factory=list,
-        description="A list of verified sources used to compile this brief.",
+        description="List of feed names used to compile this brief",
     )
+    items: list[NewsItem] = Field(default_factory=list, description="Ranked items")
