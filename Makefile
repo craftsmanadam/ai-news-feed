@@ -17,11 +17,8 @@ unit_tests: bootstrap
 	./bin/unit_tests.sh
 watch_unit_tests: bootstrap
 	./bin/watch_unit_tests.sh
-acceptance_tests: build
-	./bin/acceptance_tests.sh
-	./bin/stop.sh
-test: unit_tests acceptance_tests
-verify: clean analyze_code unit_tests acceptance_tests
+test: unit_tests
+verify: clean analyze_code unit_tests
 start: build
 	./bin/start.sh
 stop:

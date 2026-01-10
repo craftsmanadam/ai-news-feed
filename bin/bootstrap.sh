@@ -47,7 +47,6 @@ if command -v brew >/dev/null 2>&1 && [ -f "Brewfile" ]; then
   brew bundle check >/dev/null 2>&1 || {
     puts "🤖 ⟶  Installing system prerequisites…"
     brew bundle --quiet
-    az login --output none --only-show-errors
   }
 fi
 # Ubuntu/Debian/Mint

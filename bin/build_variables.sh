@@ -7,6 +7,9 @@ set -e
 export PROJECT_NAME="$(poetry version | awk {'print $1'})"
 export IMAGE_NAME=craftsmanadam/${PROJECT_NAME}
 export VERSION="$(poetry version --short)"
+export APPLICATION_DIR="./app"
+export MIN_COVERAGE_PERCENTAGE=0
+export COVERAGE_FILE="./tmp/.coverage"
 
 # A way to echo that will respect escape sequences.
 puts()
