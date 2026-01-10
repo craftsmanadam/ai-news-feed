@@ -13,4 +13,4 @@ COPY . .
 
 RUN poetry install --no-interaction --no-ansi
 
-ENTRYPOINT ["poetry", "run", "ai-news-feed"]
+ENTRYPOINT ["poetry", "run", "ai-news-feed", "run"]
