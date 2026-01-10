@@ -29,7 +29,7 @@ jobs:
             echo '```'
             # Check for tree utility, fallback to find
             if command -v tree >/dev/null 2>&1; then
-              tree -a -L 4 -I ".git|.venv|__pycache__|.mypy_cache|.pytest_cache"
+              tree -a -L 4 -I ".git|.venv|__pycache__|.mypy_cache|.pytest_cache|output"
             else
               find . -maxdepth 4 -not -path '*/.*' | sed 's|^\./||'
             fi
