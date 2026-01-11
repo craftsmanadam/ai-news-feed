@@ -2,6 +2,9 @@
 # Project-specific ignores
 #======================================================================
 
+# Output directory
+output
+
 # Temporary directory
 tmp
 temp_files
