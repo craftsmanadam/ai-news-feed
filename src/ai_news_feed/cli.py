@@ -3,7 +3,8 @@ from pydantic import TypeAdapter
 from typing import List
 
 from ai_news_feed.config import settings as config
-from ai_news_feed.models import FeedConfig
+from ai_news_feed.models import FeedConfig, NewsItem
+from ai_news_feed.sources.rss import fetch_rss_items
 
 
 app = typer.Typer(
@@ -13,6 +14,10 @@ app = typer.Typer(
 
 def logic_collect():
     typer.echo("Place holder for collection")
+    for feed_config in config.load_feeds():
+        rss_items = fetch_rss_items(feed_config)
+        adapter = TypeAdapter(List[NewsItem])
+        typer.echo(adapter.dump_json(rss_items, indent=2).decode("utf-8"))
 
 
 def logic_summarize():
