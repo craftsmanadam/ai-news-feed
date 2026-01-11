@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     feed_output_dir: Path = Path("./output/")
     rss_feeds_file: Path = Path("rss_feeds.yaml")
 
-    def load_feeds(self) -> list[FeedConfig]:
+    def load_rss_feeds(self) -> list[FeedConfig]:
         data = yaml.safe_load(self.rss_feeds_file.read_text())
         return [FeedConfig(**item) for item in data["feeds"]]
 

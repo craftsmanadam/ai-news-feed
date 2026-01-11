@@ -46,7 +46,7 @@ def settings():
     """Print current settings"""
     adapter = TypeAdapter(list[FeedConfig])
     typer.echo(config.model_dump_json(indent=2))
-    typer.echo(adapter.dump_json(config.load_feeds(), indent=2).decode("utf-8"))
+    typer.echo(adapter.dump_json(config.load_rss_feeds(), indent=2).decode("utf-8"))
 
 
 def main():
