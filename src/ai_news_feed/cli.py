@@ -13,8 +13,8 @@ app = typer.Typer(
 
 def logic_collect():
     typer.echo("Place holder for collection")
-    adapter = TypeAdapter(list[NewsItem])
-    typer.echo(adapter.dump_json(collect_rss_feeds(), indent=2).decode("utf-8"))
+    destination, _ = collect_rss_feeds()
+    typer.echo(f"Collected results: {destination}")
 
 
 def logic_summarize():
