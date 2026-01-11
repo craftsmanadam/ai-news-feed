@@ -3,22 +3,26 @@ feeds:
     url: https://thenewstack.io/ai/feed/
     tags: [ai, agents, news]
     reliability_score: 8
+    kind: rss
     max_items: 25
 
   - name: Machine Learning Mastery
     url: https://feeds.feedburner.com/MachineLearningMastery
     tags: [ai, agents, ml]
     reliability_score: 8
+    kind: rss
     max_items: 25
 
   - name: Hugging Face
     url: https://huggingface.co/blog/feed.xml
     tags: [ai, opensource, news, agents]
     reliability_score: 8
+    kind: rss
     max_items: 25
 
   - name: OpenAI Blog
     url: https://openai.com/blog/rss.xml
     tags: [ai, model, agents]
     reliability_score: 9
+    kind: rss
     max_items: 25

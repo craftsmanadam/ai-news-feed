@@ -21,5 +21,8 @@ def collect_rss_feeds() -> list[NewsItem]:
     items: list[NewsItem] = []
     for feed_config in settings.load_feeds():
         items.extend(fetch_rss_items(feed_config))
+    items.sort(
+        key=lambda i: (i.published_at or datetime.min, i.title.lower()), reverse=True
+    )
     destination = _write_items("rss", items)
     return destination, items

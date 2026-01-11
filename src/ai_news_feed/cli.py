@@ -2,7 +2,7 @@ import typer
 from pydantic import TypeAdapter
 
 from ai_news_feed.config import settings as config
-from ai_news_feed.models import FeedConfig, NewsItem
+from ai_news_feed.models import FeedConfig
 from ai_news_feed.pipeline.collect import collect_rss_feeds
 
 
@@ -12,7 +12,6 @@ app = typer.Typer(
 
 
 def logic_collect():
-    typer.echo("Place holder for collection")
     destination, _ = collect_rss_feeds()
     typer.echo(f"Collected results: {destination}")
 
