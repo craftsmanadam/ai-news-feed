@@ -5,8 +5,7 @@
 from __future__ import annotations
 
 import hashlib
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import datetime, UTC
 import feedparser
 from feedparser import FeedParserDict
 import httpx
@@ -18,24 +17,29 @@ MAX_TIMEOUT = 15.0
 
 
 def _stable_id(url: str) -> str:
-   return hashlib.sha256(url.strip().encode("utf-8")).hexdigest()
+    return hashlib.sha256(url.strip().encode("utf-8")).hexdigest()
 
-def _parse_datetime(entry: dict) -> Optional[datetime]:
-   for key in ("published_parsed", "updated_parsed"):
-       value = entry.get(key)
-       if value:
-           return datetime(*value[:6], tzinfo=timezone.utc)
-   return None
+
+def _parse_datetime(entry: dict) -> datetime | None:
+    for key in ("published_parsed", "updated_parsed"):
+        value = entry.get(key)
+        if value:
+            return datetime(*value[:6], tzinfo=UTC)
+    return None
+
 
 def _get_feed(feed: FeedConfig, timeout: float = MAX_TIMEOUT) -> FeedParserDict:
-   if feed.kind != "rss":
-       raise ValueError(f"fetch_rss_items only supports kind='rss', got {feed.kind!r}")
-   with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-       resp = client.get(str(feed.url))
-       resp.raise_for_status()
-   return feedparser.parse(resp.text)
+    if feed.kind != "rss":
+        raise ValueError(f"fetch_rss_items only supports kind='rss', got {feed.kind!r}")
+    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+        resp = client.get(str(feed.url))
+        resp.raise_for_status()
+    return feedparser.parse(resp.text)
 
-def _parse_newsitem(entry: FeedParserDict, feed: FeedConfig, parsed: FeedParserDict) -> NewsItem | None:
+
+def _parse_newsitem(
+    entry: FeedParserDict, feed: FeedConfig, parsed: FeedParserDict
+) -> NewsItem | None:
     title = (entry.get("title") or "").strip()
     url = (entry.get("link") or "").strip()
     if not title or not url:
@@ -58,11 +62,12 @@ def _parse_newsitem(entry: FeedParserDict, feed: FeedConfig, parsed: FeedParserD
         },
     )
 
-def fetch_rss_items(feed: FeedConfig, timeout: float = MAX_TIMEOUT) -> List[NewsItem]:
-   parsed = _get_feed(feed, timeout)
-   items: List[NewsItem] = []
-   for entry in (parsed.entries or [])[: feed.max_items]:
-       rss_news_item = _parse_newsitem(entry, feed, parsed)
-       if rss_news_item:
-           items.append(rss_news_item)
-   return items
+
+def fetch_rss_items(feed: FeedConfig, timeout: float = MAX_TIMEOUT) -> list[NewsItem]:
+    parsed = _get_feed(feed, timeout)
+    items: list[NewsItem] = []
+    for entry in (parsed.entries or [])[: feed.max_items]:
+        rss_news_item = _parse_newsitem(entry, feed, parsed)
+        if rss_news_item:
+            items.append(rss_news_item)
+    return items

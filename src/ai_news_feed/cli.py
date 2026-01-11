@@ -1,10 +1,9 @@
 import typer
 from pydantic import TypeAdapter
-from typing import List
 
 from ai_news_feed.config import settings as config
 from ai_news_feed.models import FeedConfig, NewsItem
-from ai_news_feed.sources.rss import fetch_rss_items
+from ai_news_feed.pipeline.collect import collect_rss_feeds
 
 
 app = typer.Typer(
@@ -14,10 +13,8 @@ app = typer.Typer(
 
 def logic_collect():
     typer.echo("Place holder for collection")
-    for feed_config in config.load_feeds():
-        rss_items = fetch_rss_items(feed_config)
-        adapter = TypeAdapter(List[NewsItem])
-        typer.echo(adapter.dump_json(rss_items, indent=2).decode("utf-8"))
+    adapter = TypeAdapter(list[NewsItem])
+    typer.echo(adapter.dump_json(collect_rss_feeds(), indent=2).decode("utf-8"))
 
 
 def logic_summarize():
@@ -48,7 +45,7 @@ def run():
 @app.command()
 def settings():
     """Print current settings"""
-    adapter = TypeAdapter(List[FeedConfig])
+    adapter = TypeAdapter(list[FeedConfig])
     typer.echo(config.model_dump_json(indent=2))
     typer.echo(adapter.dump_json(config.load_feeds(), indent=2).decode("utf-8"))
 
