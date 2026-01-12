@@ -1,5 +1,6 @@
 from pathlib import Path
 import yaml
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from ai_news_feed.models import FeedConfig
@@ -12,6 +13,7 @@ class Settings(BaseSettings):
 
     feed_output_dir: Path = Path("./output/")
     rss_feeds_file: Path = Path("rss_feeds.yaml")
+    github_token: SecretStr = SecretStr("")
 
     def load_rss_feeds(self) -> list[FeedConfig]:
         data = yaml.safe_load(self.rss_feeds_file.read_text())
