@@ -21,11 +21,13 @@ def _prompt(items_json: str) -> str:
         "Create a DailyBrief from the collected AI news items.\n"
         "Rules:\n"
         "- Pick the most important items and order them most important first.\n"
-        "- important items are ones that affect how software teams write AI solutions and agentic agents\n"
+        "- important items are ones that affect how software teams write AI solutions and agentic agents`\n"
         "- indicators: include 'must_read' if there is major, high-impact news.\n"
         "- sources: list unique source names used.\n"
         "- items: include only the selected items (not necessarily all).\n"
         "- Keep each item's raw_summary as-is if present; do not fabricate missing summaries.\n"
+        "- Do not change urls\n"
+        "- Do not create new items\n"
         "\n"
         f"Today (UTC) is {datetime.now(UTC).date().isoformat()}.\n"
         "\n"
@@ -39,7 +41,10 @@ def _build_agent(model_name: str = DEFAULT_MODEL) -> Agent[None, DailyBrief]:
         base_url=GITHUB_ENDPOINT,
         api_key=settings.github_token.get_secret_value(),
     )
-    model = OpenAIChatModel(model_name=model_name, provider=provider)
+    model = OpenAIChatModel(
+        model_name=model_name,
+        provider=provider
+    )
     return Agent(
         model=model,
         output_type=PromptedOutput(DailyBrief),
@@ -70,13 +75,17 @@ def _items_payload(items: Iterable[NewsItem]) -> str:
 
 
 def summarize_items(
-    items: list[NewsItem], top_n: int = 25, model_name: str = DEFAULT_MODEL
+    items: list[NewsItem], top_n: int = 10, model_name: str = DEFAULT_MODEL
 ) -> DailyBrief:
     agent = _build_agent(model_name=model_name)
     trimmed = items[:top_n]
     items_json = _items_payload(trimmed)
     result = agent.run_sync(
-        _prompt(items_json), model_settings={"temperature": 0.2, "tool_choice": "auto"}
+        _prompt(items_json),
+        model_settings={
+            "temperature": 0.2,
+            "tool_choice": "auto"
+        }
     )
     brief = result.output
     if not getattr(brief, "date", None):

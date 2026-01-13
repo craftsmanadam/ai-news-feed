@@ -4,6 +4,7 @@
 
 # Output directory
 output
+output_docker
 
 # Temporary directory
 tmp

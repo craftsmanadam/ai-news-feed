@@ -1,0 +1,7 @@
+---
+services:
+  apiapp:
+    image: ${IMAGE_NAME}
+    container_name: ai-news-feed-1
+    env_file:
+      - .env.secrets
