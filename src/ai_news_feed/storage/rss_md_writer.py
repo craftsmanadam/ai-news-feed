@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from ai_news_feed.config import settings
 from ai_news_feed.models import DailyBrief
 

@@ -28,6 +28,7 @@ def _prompt(items_json: str) -> str:
         "- Keep each item's raw_summary as-is if present; do not fabricate missing summaries.\n"
         "- Do not change urls\n"
         "- Do not create new items\n"
+        "- If the input does not contain enough information to support a claim, say 'Details not fully available from source feed.'"
         "\n"
         f"Today (UTC) is {datetime.now(UTC).date().isoformat()}.\n"
         "\n"
@@ -36,15 +37,12 @@ def _prompt(items_json: str) -> str:
     )
 
 
-def _build_agent(model_name: str = DEFAULT_MODEL) -> Agent[None, DailyBrief]:
+def _build_agent(model_name: str = DEFAULT_MODEL) -> Agent[None, str]:
     provider = OpenAIProvider(
         base_url=GITHUB_ENDPOINT,
         api_key=settings.github_token.get_secret_value(),
     )
-    model = OpenAIChatModel(
-        model_name=model_name,
-        provider=provider
-    )
+    model = OpenAIChatModel(model_name=model_name, provider=provider)
     return Agent(
         model=model,
         output_type=PromptedOutput(DailyBrief),
@@ -63,6 +61,7 @@ def _items_payload(items: Iterable[NewsItem]) -> str:
     for i in items:
         minimal.append(
             {
+                "id": i.id,
                 "title": i.title,
                 "url": str(i.url),
                 "source": i.source,
@@ -81,11 +80,7 @@ def summarize_items(
     trimmed = items[:top_n]
     items_json = _items_payload(trimmed)
     result = agent.run_sync(
-        _prompt(items_json),
-        model_settings={
-            "temperature": 0.2,
-            "tool_choice": "auto"
-        }
+        _prompt(items_json), model_settings={"temperature": 0.2, "tool_choice": "auto"}
     )
     brief = result.output
     if not getattr(brief, "date", None):
